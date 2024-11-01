@@ -14,34 +14,36 @@ type Config struct {
 	LastUpdated time.Time `yaml:"last_updated"`
 }
 
-// Save writes the configuration to the .ghi.yml file in the current working
+// TODO make multi repos to call offline to save going into repo folders
+// Save writes the configuration to the .ogi.yml file in the current working
 // directory. This should be called after setting the owner and repo fields.
 func (c *Config) Save() {
 	c.LastUpdated = time.Now()
-	b, _ := yaml.Marshal(c)
-	os.WriteFile("./.ghi.yml", b, 0755)
+	data, _ := yaml.Marshal(c)
+	os.WriteFile("./.ogi.yml", data, 0755)
 }
 
 // SetFromArgs takes the first argument passed in and assumes it's a
 // repository path in the format of "owner/repo". It splits the path
 // and sets the owner and repo fields, then saves the configuration.
-func (c *Config) SetFromArgs(args []string) {
-	sp := strings.Split(args[0], "/")
-	c.Owner = sp[0]
-	c.Repo = sp[1]
-	c.Save()
+func (config *Config) SetFromArgs(args []string) {
+	stringSplit := strings.Split(args[0], "/")
+	if len(stringSplit) == 2 {
+		config.Owner = stringSplit[0]
+		config.Repo = stringSplit[1]
+		config.Save()
+	}
 }
 
-// LoadConfig loads the configuration from the .ghi.yml file in the current
+// LoadConfig loads the configuration from the .ogi.yml file in the current
 // directory. If the file doesn't exist, or there's an error loading it, it
 // returns a new Config object.
 func LoadConfig() *Config {
-	c := &Config{}
-	b, err := os.ReadFile("./.ghi.yml")
+	config := &Config{}
+	data, err := os.ReadFile("./.ogi.yml")
 	if err != nil {
-		return c
+		return config
 	}
-
-	yaml.Unmarshal(b, c)
-	return c
+	yaml.Unmarshal(data, config)
+	return config
 }

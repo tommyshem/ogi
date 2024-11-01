@@ -1,4 +1,4 @@
-package store
+package bolt
 
 import (
 	"encoding/json"
@@ -7,9 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/nutsdb/nutsdb"
-
-	"github.com/boltdb/bolt"
+	"github.com/boltdb/bolt" //TODO change to bbolt for updates as package
 	"github.com/mitchellh/go-homedir"
 	"github.com/tommyshem/ogi/cmd/issue"
 )
@@ -18,7 +16,6 @@ type Store struct {
 	Owner  string
 	Repo   string
 	DBBolt *bolt.DB
-	DBNut  *nutsdb.DB
 }
 
 func (s Store) BucketName() []byte {
@@ -38,9 +35,9 @@ func (s Store) BucketNameString() string {
 func New(owner string, repo string) (*Store, error) {
 	s := &Store{Owner: owner, Repo: repo}
 	// open the bolt database
-	db, err := bolt.Open(location(), 0600, &bolt.Options{Timeout: 1 * time.Second})
+	db, err := bolt.Open(Location(), 0600, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
-		slog.Info("New bolt db could not be opened filename :" + location())
+		slog.Info("New bolt db could not be opened filename :" + Location())
 		return s, err
 	}
 	s.DBBolt = db
@@ -167,7 +164,7 @@ func (s *Store) AllByState(state string) ([]issue.Issue, error) {
 	return issues, nil
 }
 
-func location() string {
+func Location() string {
 	dir, _ := homedir.Dir()
 	dir, _ = homedir.Expand(dir)
 	return fmt.Sprintf("%s/.ogi-issues.db", dir)

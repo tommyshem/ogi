@@ -5,10 +5,16 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	nutsStore "github.com/tommyshem/ogi/cmd/nutsdb"
+	// change storage backend
+	//	storage "github.com/tommyshem/ogi/cmd/storage/nutsdb"
+	storage "github.com/tommyshem/ogi/cmd/storage/bolt"
+	//storage "github.com/tommyshem/ogi/cmd/bolt"
 )
 
-var db *nutsStore.NutsStore
+// global structs
+var db *storage.Store
+
+// var db *storage.NutsStore
 var config *Config
 
 var RootCmd = &cobra.Command{
@@ -32,7 +38,7 @@ meta-data file in this repo to track that.`)
 			}
 		}
 
-		s, err := nutsStore.NewNutDB(config.Owner, config.Repo)
+		s, err := storage.New(config.Owner, config.Repo)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(-1)

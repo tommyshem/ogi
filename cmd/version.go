@@ -6,7 +6,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Version = "0.1.1"
+// bump version for bug fixes and features
+// not-backward-compatible.new-feature.bug fixes
+var Version = "0.1.2"
 
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{

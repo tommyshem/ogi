@@ -1,4 +1,4 @@
-package nutsStore
+package nutsdb
 
 import (
 	"encoding/json"
@@ -41,11 +41,11 @@ func (store NutsStore) RepoBucketName() string {
 	return string(fmt.Sprintf("%s-%s-%s", store.Owner, store.Repo, "bucket"))
 }
 
-// NewNutDB creates a new NutsStore instance for the specified GitHub owner and repo.
+// New creates a new NutsStore instance for the specified GitHub owner and repo.
 // It initializes a NutsDB database and creates a bucket for storing issues
 // if it does not already exist. Returns the initialized NutsStore and any error
 // encountered during the database setup.
-func NewNutDB(owner string, repo string) (*NutsStore, error) {
+func New(owner string, repo string) (*NutsStore, error) {
 	slog.Info(fmt.Sprintf("Creating NutsDB store for %s/%s", owner, repo))
 	store := &NutsStore{Owner: owner, Repo: repo}
 	// open the nuts database
