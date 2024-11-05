@@ -164,8 +164,13 @@ func (s *Store) AllByState(state string) ([]issue.Issue, error) {
 	return issues, nil
 }
 
+// Location returns the path to the Bolt database file.
+// It is in the user's home directory, with a name of ".ogi-issues.db".
 func Location() string {
-	dir, _ := homedir.Dir()
-	dir, _ = homedir.Expand(dir)
-	return fmt.Sprintf("%s/.ogi-issues.db", dir)
+	homeDir, err := homedir.Dir()
+	if err != nil {
+		return ""
+	}
+	expandedDir, _ := homedir.Expand(homeDir)
+	return fmt.Sprintf("%s/.ogi-issues.db", expandedDir)
 }
