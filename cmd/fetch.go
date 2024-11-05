@@ -38,26 +38,22 @@ set the ENV var "GITHUB_TOKEN" with a GitHub Personal Access Token.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO change config to load from inside git repo or a multi repo config
-		config = LoadConfig()
-		if config.Repo == "" {
-			if len(args) == 0 {
-				fmt.Println(`It looks like you haven't initialized OGI yet!
 
-The first time you run OGI you should run "ogi fetch owner/repo".
+		if len(args) == 0 {
+			config = LoadConfig()
+			if config.Repo == "" {
+				fmt.Println(`
+It looks like you haven't initialized OGI yet!
 
-This will fetch all of your issues for that repository. Future calls
-to "fetch" won't require the "owner/repo" since we'll store a little
-meta-data file in this repo to track that.`)
+The first time you run OGI you should run "ogi fetch owner/repo"
+or inside a git repo folder
+
+This will fetch all of your issues for that repository. `)
 				os.Exit(-1)
 			} else {
 				config.SetFromArgs(args)
 			}
 		}
-		//
-		if len(args) > 0 {
-			config.SetFromArgs(args)
-		}
-
 		s, err := storage.New(config.Owner, config.Repo)
 		if err != nil {
 			fmt.Println(err)
