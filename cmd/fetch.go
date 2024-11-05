@@ -63,7 +63,7 @@ set the ENV var "GITHUB_TOKEN" with a GitHub Personal Access Token.
 
 This token can be set as an environment variable "GITHUB_TOKEN".`)
 				}
-				os.Exit(-1)
+				os.Exit(2)
 			}
 			count += len(issues)
 
