@@ -13,6 +13,7 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 	"github.com/tommyshem/ogi/cmd/issue"
+	storage "github.com/tommyshem/ogi/cmd/storage/bolt"
 	"golang.org/x/oauth2"
 )
 
@@ -23,8 +24,8 @@ var fetchCmd = &cobra.Command{
 	Use:   "fetch",
 	Short: "Fetches all of the issues for the specified repo.",
 	Long: `Fetches all of the issues for the specified repo.
-This will clear any existing issues stored locally, pull down
-everything from GitHub and store it locally for offline use.
+Pull down everything from GitHub and store it locally for offline use.
+This will clear any existing issues stored locally.
 
 The first time you run this command you should run it like such:
 
@@ -36,11 +37,35 @@ If you are going to be calling a private repo you will need to
 set the ENV var "GITHUB_TOKEN" with a GitHub Personal Access Token.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		// TODO change config to load from inside git repo or a multi repo config
+		config = LoadConfig()
+		if config.Repo == "" {
+			if len(args) == 0 {
+				fmt.Println(`It looks like you haven't initialized OGI yet!
+
+The first time you run OGI you should run "ogi fetch owner/repo".
+
+This will fetch all of your issues for that repository. Future calls
+to "fetch" won't require the "owner/repo" since we'll store a little
+meta-data file in this repo to track that.`)
+				os.Exit(-1)
+			} else {
+				config.SetFromArgs(args)
+			}
+		}
+		//
 		if len(args) > 0 {
 			config.SetFromArgs(args)
 		}
 
-		err := db.Clear()
+		s, err := storage.New(config.Owner, config.Repo)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+		db = s
+
+		err = db.Clear()
 		if err != nil {
 			log.Fatal(err)
 		}
